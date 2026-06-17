@@ -1,4 +1,4 @@
 interface:
-  display_name: "Agent Workflow Init"
+  display_name: "Groove"
   short_description: "Create (new) or health-check (adapt) an Agent Workflow OS workspace"
-  default_prompt: "Use $agent-workflow-init to set up a new Agent Workflow OS workspace here, or inspect this folder and suggest adaptations."
+  default_prompt: "Use $groove to set up a new Agent Workflow OS workspace here, or inspect this folder and suggest adaptations."

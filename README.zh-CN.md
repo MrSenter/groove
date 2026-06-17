@@ -1,8 +1,10 @@
-# agent-workflow-init
+# Groove
+
+> 包浆你的工作流。
 
 把一个普通文件夹变成 **Codex** 和 **Claude Code** 都能使用的轻量工作流系统。
 
-Agent Workflow Init 给重复性 agent 工作补上一层缺失的操作系统:入口路由、执行日志、巡查复盘、DOM/操作记忆、清理边界和风险确认。它适合那些已经开始让 agent 做固定工作的人:下一次 agent 进来时,不应该每次都从零摸索,而应该沿着真实任务越跑越顺。
+Groove 给重复性 agent 工作补上一层缺失的操作系统:入口路由、执行日志、巡查复盘、DOM/操作记忆、清理边界和风险确认。它适合那些已经开始让 agent 做固定工作的人:下一次 agent 进来时,不应该每次都从零摸索,而应该沿着真实任务越跑越顺。
 
 > English: see [README.md](README.md).
 
@@ -44,12 +46,12 @@ agent 的问题经常不在"模型能不能做",而在"下一个 agent 能不能
 
 ## 安装
 
-把 `agent-workflow-init/` 文件夹复制到 agent 的 skills 目录:
+把 `groove/` 文件夹复制到 agent 的 skills 目录:
 
-- Codex (macOS/Linux): `~/.codex/skills/agent-workflow-init/`
-- Codex (Windows): `C:\Users\<你>\.codex\skills\agent-workflow-init\`
-- Claude Code (macOS/Linux): `~/.claude/skills/agent-workflow-init/`
-- Claude Code (Windows): `C:\Users\<你>\.claude\skills\agent-workflow-init\`
+- Codex (macOS/Linux): `~/.codex/skills/groove/`
+- Codex (Windows): `C:\Users\<你>\.codex\skills\groove\`
+- Claude Code (macOS/Linux): `~/.claude/skills/groove/`
+- Claude Code (Windows): `C:\Users\<你>\.claude\skills\groove\`
 
 需要 Python 3.9+,无第三方依赖。
 

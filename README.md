@@ -1,9 +1,11 @@
-# agent-workflow-init
+# Groove
+
+> *Patina your workflow until it grooves.*
 
 Turn a regular folder into a lightweight workflow OS for **Codex** and
 **Claude Code**.
 
-Agent Workflow Init creates the missing operating layer around recurring agent
+Groove creates the missing operating layer around recurring agent
 work: routing, execution logs, review loops, DOM/operation memory, cleanup
 boundaries, and risk controls. It is built for people whose agents handle
 repeated work and should get faster over time instead of starting from zero in
@@ -59,12 +61,12 @@ reminds the agent to do this. See `SKILL.md` → "Localization".
 
 ## Install
 
-Copy the `agent-workflow-init/` folder into your agent's skills directory:
+Copy the `groove/` folder into your agent's skills directory:
 
-- Codex (macOS/Linux): `~/.codex/skills/agent-workflow-init/`
-- Codex (Windows): `C:\Users\<you>\.codex\skills\agent-workflow-init\`
-- Claude Code (macOS/Linux): `~/.claude/skills/agent-workflow-init/`
-- Claude Code (Windows): `C:\Users\<you>\.claude\skills\agent-workflow-init\`
+- Codex (macOS/Linux): `~/.codex/skills/groove/`
+- Codex (Windows): `C:\Users\<you>\.codex\skills\groove\`
+- Claude Code (macOS/Linux): `~/.claude/skills/groove/`
+- Claude Code (Windows): `C:\Users\<you>\.claude\skills\groove\`
 
 Requires Python 3.9+. No third-party dependencies.
 

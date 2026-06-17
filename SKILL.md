@@ -1,9 +1,9 @@
 ---
-name: agent-workflow-init
+name: groove
 description: Set up or adapt an Agent Workflow OS workspace. Use when the user asks to create a new agent workflow workspace, install/initialize a workflow assistant, compare an existing workflow system against Agent Workflow OS, generate an adapt/health-check report for existing workflows, or after user approval lightly add an improvement layer such as a candidate-workflow rule, DOM map template, lightweight knowledge base, and a `_待删除/` recycle area with a cleanup script.
 ---
 
-# Agent Workflow Init
+# Groove
 
 This skill initializes or adapts an Agent Workflow OS workspace. It is an install/adaptation skill, not a daily business-execution skill.
 
@@ -58,13 +58,13 @@ python3 scripts/init_agent_workflow.py --target <folder> --mode <new|adapt>
 
 On Windows, `python3` is often not on PATH — use `python` (or `py`) instead. Use the absolute path if you are not running from inside the skill folder. Install location depends on the agent and OS:
 
-- codex (macOS/Linux): `~/.codex/skills/agent-workflow-init/`
-- codex (Windows): `C:\Users\<you>\.codex\skills\agent-workflow-init\`
-- Claude Code (macOS/Linux): `~/.claude/skills/agent-workflow-init/`
-- Claude Code (Windows): `C:\Users\<you>\.claude\skills\agent-workflow-init\`
+- codex (macOS/Linux): `~/.codex/skills/groove/`
+- codex (Windows): `C:\Users\<you>\.codex\skills\groove\`
+- Claude Code (macOS/Linux): `~/.claude/skills/groove/`
+- Claude Code (Windows): `C:\Users\<you>\.claude\skills\groove\`
 
 ```bash
-python3 ~/.codex/skills/agent-workflow-init/scripts/init_agent_workflow.py --target <folder> --mode <new|adapt>
+python3 ~/.codex/skills/groove/scripts/init_agent_workflow.py --target <folder> --mode <new|adapt>
 ```
 
 Useful options:
@@ -166,7 +166,7 @@ python3 -m py_compile scripts/init_agent_workflow.py
 For skill development, validate the skill folder with the system skill validator when available (codex example; adjust the path to your install location):
 
 ```bash
-python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py ~/.codex/skills/agent-workflow-init
+python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py ~/.codex/skills/groove
 ```
 
 ## Red Lines
