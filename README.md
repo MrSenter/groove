@@ -1,14 +1,32 @@
 # agent-workflow-init
 
-A conservative initializer and health-check **skill** for agent-friendly workflow
-workspaces — routing, logs, reviews, a DOM/operation memory, a lightweight knowledge
-base, cleanup boundaries, and risk controls — for **Codex** and **Claude Code**.
+Turn a regular folder into a lightweight workflow OS for **Codex** and
+**Claude Code**.
+
+Agent Workflow Init creates the missing operating layer around recurring agent
+work: routing, execution logs, review loops, DOM/operation memory, cleanup
+boundaries, and risk controls. It is built for people whose agents handle
+repeated work and should get faster over time instead of starting from zero in
+every session.
 
 > 中文说明见 [README.zh-CN.md](README.zh-CN.md)。
 
-This is a **skill package, not a marketplace plugin.** You install it by copying the
-folder into your agent's `skills/` directory (see below). There is no
-`.codex-plugin/plugin.json`; nothing to "install" through a plugin marketplace.
+## Why this exists
+
+Agent work often fails in the gap between "the model can do it" and "the next
+agent knows how to do it again." This package gives that gap a small, durable
+shape:
+
+- **Agents stop starting from scratch.** Entry docs, routing tables, and workflow
+  cards tell the next agent what to read and what to skip.
+- **Real work turns into reusable process.** Execution logs and review loops
+  compress repeated tasks into workflows.
+- **Automation stays bounded.** Cleanup scripts, risk stops, and no-overwrite
+  defaults keep workflow tooling from becoming dangerous.
+
+This is **not** an automation platform, a task runner, or a giant agent
+framework. It is a conservative workspace initializer and health-check **skill**.
+Install once; let agents learn from real work.
 
 ## What it does
 
@@ -24,6 +42,12 @@ Two modes, pick the lightest that fits:
 - Never overwrites or deletes your files (creates-if-missing only).
 - Never moves or renames your existing entry docs, workflows, logs, or tools.
 - In `adapt`, never modifies a mature existing system — it inspects, scores, and recommends.
+
+## Skill package, not a plugin
+
+This is a **skill package, not a marketplace plugin.** You install it by copying the
+folder into your agent's `skills/` directory (see below). There is no
+`.codex-plugin/plugin.json`; nothing to "install" through a plugin marketplace.
 
 ## Language: it generates a Chinese workspace
 
