@@ -4,9 +4,10 @@
 Modes:
 - new   : create the streamlined Agent Workflow OS workspace (templates/ is
           the single source of truth for its contents and layout).
-- adapt : inspect an existing workflow folder, write a health-check report,
-          and only with --apply-light-upgrade add a lightweight improvement
-          layer. Never overwrites existing user files.
+- adapt : inspect an existing workflow folder, print a dialogue-first
+          scoring handoff, and only with --write-health-report or
+          --apply-light-upgrade write Groove-owned support files. Never
+          overwrites existing user files.
 
 This script is intentionally conservative:
 - create missing files and directories;
@@ -15,8 +16,9 @@ This script is intentionally conservative:
 
 File contents live as plain markdown under `../templates/`, mirroring the
 generated workspace layout. This script only owns the layout, the manifest,
-and the small amount of dynamic text (health report, init report). Edit a
-generated file's wording by editing its template, not this script.
+and the small amount of dynamic text (dialogue handoff, optional health
+report, init report). Edit a generated file's wording by editing its template,
+not this script.
 
 Localization: this script always writes Chinese. There is no language flag by
 design — to produce another language, generate the workspace first, then the
@@ -303,6 +305,58 @@ def existing_observation(target: Path) -> tuple[str, list[str]]:
     return _scan_tree(target), _find_entry_docs(target)
 
 
+def workflow_score_handoff(target: Path, mode: str) -> str:
+    """Print the evidence package and dialogue-first scoring card for the agent.
+
+    The script still does not score semantically. It gives the agent the entry
+    docs and output shape so the final score can be delivered in the chat first.
+    """
+    tree, entry_docs = existing_observation(target)
+    if entry_docs:
+        entry_bullets = "\n".join(f"- `{d}`" for d in entry_docs)
+    else:
+        entry_bullets = ("- 前 2 层未发现 README / AGENTS.md / agent.md / CLAUDE.md。"
+                         "agent 需自行判断入口在哪；若确实空白，更适合用 `new`。")
+    capability_rows = "\n".join(f"| {c} |  |  |  |" for c in _CAPABILITIES)
+    cap_count = len(_CAPABILITIES)
+    max_score = cap_count * 3
+
+    return f"""## Groove 体检评分卡（对话框优先）
+
+> 本脚本只采证，不做语义评分。agent 必须读下面入口文档和结构证据后，在对话框里补齐评分、成熟度和建议。
+> 默认不写 `现有工作流体检报告.md`；需要留档时重新运行 `--write-health-report`。
+
+- 评分对象: `{target}`
+- 模式: {mode}
+- 计分项: {cap_count} 项，满分 {max_score} 分（不适用项排除）
+
+### 先在对话框输出
+
+- 一句话判断:
+- 总分:
+- 成熟度: <40% 起步 / 40-70% 基本可用 / 70-90% 成熟 / >90% 很成熟
+- 最强项:
+- 最大缺口:
+- 不建议改:
+- 下一步只补:
+- 是否建议 apply-light-upgrade:
+
+### 入口文档（agent 必读）
+
+{entry_bullets}
+
+### 已发现结构（证据，最多 3 层）
+
+{tree}
+
+### 能力评分表（agent 读完后在对话框压缩汇报）
+
+| Agent Workflow OS 能力 | 目标系统里的对应物 | 评分 0-3 / — | 说明 |
+|---|---|---|---|
+{capability_rows}
+"""
+
+
 def workflow_health_report(target: Path, mode: str) -> str:
     """生成体检报告的"半成品"：脚本只填证据，能力对照与结论留给 agent 读内容后补。
 
@@ -394,24 +448,33 @@ def light_upgrade(target: Path, log: ActionLog, dry_run: bool) -> None:
         safe_write(base / rel, render(rel), log, dry_run)
 
 
-def setup_adapt(target: Path, cleanup_cycle: str, review_cycle: str, log: ActionLog, dry_run: bool, apply_light_upgrade: bool = False) -> None:
+def setup_adapt(
+    target: Path,
+    cleanup_cycle: str,
+    review_cycle: str,
+    log: ActionLog,
+    dry_run: bool,
+    apply_light_upgrade: bool = False,
+    write_health_report: bool = False,
+) -> None:
     base = target / ADAPT_SUBDIR
-    ensure_dir(base, log, dry_run)
-    ensure_dir(base / "_安装记录", log, dry_run)
-    install_md = render(
-        "_安装记录/README.md",
-        mode="adapt",
-        cleanup_cycle=cleanup_cycle,
-        review_cycle=review_cycle,
-        install_time=now_stamp(),
-    )
-    safe_write(base / "_安装记录" / "README.md", install_md, log, dry_run)
-    safe_write(base / "现有工作流体检报告.md", workflow_health_report(target, "adapt"), log, dry_run)
+    if write_health_report or apply_light_upgrade:
+        ensure_dir(base, log, dry_run)
+        ensure_dir(base / "_安装记录", log, dry_run)
+        install_md = render(
+            "_安装记录/README.md",
+            mode="adapt",
+            cleanup_cycle=cleanup_cycle,
+            review_cycle=review_cycle,
+            install_time=now_stamp(),
+        )
+        safe_write(base / "_安装记录" / "README.md", install_md, log, dry_run)
+    print(workflow_score_handoff(target, "adapt"))
+    if write_health_report:
+        safe_write(base / "现有工作流体检报告.md", workflow_health_report(target, "adapt"), log, dry_run)
     if apply_light_upgrade:
         light_upgrade(target, log, dry_run)
         log.warn("adapt 已按用户选择生成轻量升级文件；仍未覆盖现有流程。")
-    else:
-        log.warn("adapt 默认只生成体检报告和改进建议；如用户确认升级，再使用 --apply-light-upgrade。")
 
 
 # ---------------------------------------------------------------------------
@@ -509,6 +572,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--cleanup-cycle", default="每周一次", help="_待删除/ 自动清理周期。")
     parser.add_argument("--review-cycle", default="每周一次", help="工作流巡查周期。")
     parser.add_argument("--apply-light-upgrade", action="store_true", help="In adapt mode, create lightweight improvement files after user approval.")
+    parser.add_argument("--write-health-report", action="store_true", help="In adapt mode, also write Agent工作流助手/现有工作流体检报告.md for archival handoff.")
     parser.add_argument("--dry-run", action="store_true", help="Print intended actions without writing files.")
     return parser.parse_args()
 
@@ -530,10 +594,21 @@ def main() -> int:
     if args.mode == "new":
         setup_new(target, args.cleanup_cycle, args.review_cycle, log, args.dry_run)
     elif args.mode == "adapt":
-        setup_adapt(target, args.cleanup_cycle, args.review_cycle, log, args.dry_run, args.apply_light_upgrade)
+        setup_adapt(
+            target,
+            args.cleanup_cycle,
+            args.review_cycle,
+            log,
+            args.dry_run,
+            args.apply_light_upgrade,
+            args.write_health_report,
+        )
 
-    write_report(target, args.mode, log, args.dry_run)
-    print(f"[OK] {APP_NAME} initialized in {args.mode} mode at {target}")
+    should_write_install_report = args.mode == "new" or args.write_health_report or args.apply_light_upgrade
+    if should_write_install_report:
+        write_report(target, args.mode, log, args.dry_run)
+    action = "checked" if args.mode == "adapt" else "initialized"
+    print(f"[OK] {APP_NAME} {action} in {args.mode} mode at {target}")
     print(f"created={len(log.created)} updated={len(log.updated)} skipped={len(log.skipped)} warnings={len(log.warnings)}")
     if args.mode == "new":
         print(NEXT_STEPS_NEW)

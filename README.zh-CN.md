@@ -25,13 +25,13 @@ agent 的问题经常不在"模型能不能做",而在"下一个 agent 能不能
 | 模式 | 什么时候用 | 效果 |
 |---|---|---|
 | `new` | 想要一个全新的专用 AI 工作流文件夹 | 生成完整工作区骨架。根 `AGENTS.md` 缺失才建,绝不覆盖。 |
-| `adapt` | 文件夹已有规则/工作流/日志,想做体检 | 在 `Agent工作流助手/` 下写一份**只读**体检报告,不动其他任何文件。仅在你确认后用 `--apply-light-upgrade` 再跑,才加一层轻量改进。 |
+| `adapt` | 文件夹已有规则/工作流/日志,想做体检 | 默认把采证和评分卡直接输出到对话框,不写报告。需要留档时才加 `--write-health-report`;你确认后再用 `--apply-light-upgrade` 加轻量改进。 |
 
 ### 它绝不做的事
 
 - 绝不覆盖或删除你的文件(只"缺了才建")。
 - 绝不移动或重命名你现有的入口文档、工作流、日志、工具。
-- `adapt` 绝不改动成熟系统——只体检、打分、给建议。
+- `adapt` 绝不改动成熟系统——默认只在对话框体检、打分、给建议。
 
 ## 它是 skill 包,不是 plugin
 
@@ -61,8 +61,11 @@ agent 的问题经常不在"模型能不能做",而在"下一个 agent 能不能
 # 新工作区
 python3 scripts/init_agent_workflow.py --target ./demo --mode new
 
-# 体检已有文件夹(只读)
+# 体检已有文件夹(对话框优先,默认不写报告)
 python3 scripts/init_agent_workflow.py --target ./existing --mode adapt
+
+# 需要留档时再写体检报告脚手架
+python3 scripts/init_agent_workflow.py --target ./existing --mode adapt --write-health-report
 
 # 只预览,不写任何文件
 python3 scripts/init_agent_workflow.py --target ./demo --mode new --dry-run
@@ -71,7 +74,7 @@ python3 scripts/init_agent_workflow.py --target ./demo --mode new --dry-run
 Windows 上把 `python3` 换成 `python`(或 `py`)。
 
 常用参数:`--cleanup-cycle`、`--review-cycle`(默认都是 `每周一次`)、
-`--apply-light-upgrade`(仅 adapt)、`--dry-run`。
+`--write-health-report`(仅 adapt)、`--apply-light-upgrade`(仅 adapt)、`--dry-run`。
 
 ## 清理
 

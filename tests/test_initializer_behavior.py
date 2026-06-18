@@ -72,6 +72,34 @@ def test_cleanup_dry_run_keeps_pending_contents_and_writes_log() -> None:
         assert "mode=DryRun" in log.read_text(encoding="utf-8")
 
 
+def test_adapt_default_prints_scorecard_without_writing_report() -> None:
+    """Default adapt is dialogue-first and does not create report files."""
+    with tempfile.TemporaryDirectory() as td:
+        target = Path(td) / "existing"
+        target.mkdir()
+        (target / "README.md").write_text("# Existing workflow\n", encoding="utf-8")
+
+        result = _run_initializer("--target", str(target), "--mode", "adapt")
+
+        assert "Groove 体检评分卡" in result.stdout
+        assert "README.md" in result.stdout
+        assert not (target / "Agent工作流助手" / "现有工作流体检报告.md").exists()
+        assert not (target / "Agent工作流助手" / "_安装记录").exists()
+
+
+def test_adapt_write_health_report_keeps_archival_scaffold_optional() -> None:
+    """The report scaffold is opt-in for archival handoff."""
+    with tempfile.TemporaryDirectory() as td:
+        target = Path(td) / "existing"
+        target.mkdir()
+        (target / "README.md").write_text("# Existing workflow\n", encoding="utf-8")
+
+        _run_initializer("--target", str(target), "--mode", "adapt", "--write-health-report")
+
+        assert (target / "Agent工作流助手" / "现有工作流体检报告.md").exists()
+        assert (target / "Agent工作流助手" / "_安装记录").exists()
+
+
 def test_adapt_light_upgrade_does_not_overwrite_existing_assistant_files() -> None:
     """Light upgrade may add missing files but must skip files already present."""
     with tempfile.TemporaryDirectory() as td:
@@ -94,5 +122,7 @@ def test_adapt_light_upgrade_does_not_overwrite_existing_assistant_files() -> No
 if __name__ == "__main__":
     test_new_dry_run_includes_default_cleaner()
     test_cleanup_dry_run_keeps_pending_contents_and_writes_log()
+    test_adapt_default_prints_scorecard_without_writing_report()
+    test_adapt_write_health_report_keeps_archival_scaffold_optional()
     test_adapt_light_upgrade_does_not_overwrite_existing_assistant_files()
     print("[OK] initializer behavior checks passed.")

@@ -37,7 +37,7 @@ Two modes, pick the lightest that fits:
 | Mode | Use when | Effect |
 |---|---|---|
 | `new` | You want a fresh, dedicated AI workflow folder | Generates a complete workspace skeleton. Creates the root `AGENTS.md` if missing; never overwrites. |
-| `adapt` | A folder already has rules/workflows/logs and you want a health check | Writes a **read-only** health-check report under `Agent工作流助手/`. Touches nothing else. Only adds a lightweight improvement layer when you rerun with `--apply-light-upgrade` after approval. |
+| `adapt` | A folder already has rules/workflows/logs and you want a health check | Prints a dialogue-first scoring handoff. Writes no report by default. Use `--write-health-report` only when you need an archival scaffold, and `--apply-light-upgrade` only after approval. |
 
 ### What it never does
 
@@ -76,8 +76,11 @@ Requires Python 3.9+. No third-party dependencies.
 # new workspace
 python3 scripts/init_agent_workflow.py --target ./demo --mode new
 
-# health-check an existing folder (read-only)
+# health-check an existing folder (dialogue-first, no report by default)
 python3 scripts/init_agent_workflow.py --target ./existing --mode adapt
+
+# also write an archival health-check scaffold
+python3 scripts/init_agent_workflow.py --target ./existing --mode adapt --write-health-report
 
 # preview without writing anything
 python3 scripts/init_agent_workflow.py --target ./demo --mode new --dry-run
@@ -86,7 +89,7 @@ python3 scripts/init_agent_workflow.py --target ./demo --mode new --dry-run
 On Windows use `python` (or `py`) instead of `python3`.
 
 Useful flags: `--cleanup-cycle`, `--review-cycle` (both default `每周一次`),
-`--apply-light-upgrade` (adapt only), `--dry-run`.
+`--write-health-report` (adapt only), `--apply-light-upgrade` (adapt only), `--dry-run`.
 
 ## Generated workspace (new mode)
 

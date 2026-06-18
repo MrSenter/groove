@@ -1,6 +1,6 @@
 ---
 name: groove
-description: Set up or adapt an Agent Workflow OS workspace. Use when the user asks to create a new agent workflow workspace, install/initialize a workflow assistant, compare an existing workflow system against Agent Workflow OS, generate an adapt/health-check report for existing workflows, or after user approval lightly add an improvement layer such as a candidate-workflow rule, DOM map template, lightweight knowledge base, and a `_待删除/` recycle area with a cleanup script.
+description: Set up or adapt an Agent Workflow OS workspace. Use when the user asks to create a new agent workflow workspace, install/initialize a workflow assistant, compare an existing workflow system against Agent Workflow OS, run a dialogue-first adapt/health-check score for existing workflows, optionally write the health-check report for archival handoff, or after user approval lightly add an improvement layer such as a candidate-workflow rule, DOM map template, lightweight knowledge base, and a `_待删除/` recycle area with a cleanup script.
 ---
 
 # Groove
@@ -28,7 +28,7 @@ Two modes only. Use the lightest one that fits the target:
 
 If the user does not specify a mode, choose `new` for an empty or dedicated new folder. Choose `adapt` when you see existing workflow surfaces such as `AGENTS.md`, `README.md`, `快速入口.md`, `工作流/`, `执行记录/`, `执行日志/`, DOM maps, or similar self-maintenance structure.
 
-`adapt` is read-only by default: it writes a health-check report under `Agent工作流助手/` and never modifies the user's existing files. It only adds a lightweight improvement layer when the user approves and you rerun with `--apply-light-upgrade`.
+`adapt` is dialogue-first by default: it inspects the target, prints a scoring handoff in the conversation/terminal, and does not write a health-check report unless you pass `--write-health-report`. It only adds a lightweight improvement layer when the user approves and you rerun with `--apply-light-upgrade`.
 
 ## What To Ask
 
@@ -44,7 +44,8 @@ Ask these only when relevant:
 
 - **target folder** if not clear;
 - **mode** if both `new` and `adapt` are plausible and the choice affects existing files;
-- in `adapt`, **whether to apply the light upgrade** after the user reads the report; default is no.
+- in `adapt`, **whether to write an archival report** after the dialogue score; default is no.
+- in `adapt`, **whether to apply the light upgrade** after the user sees the dialogue score; default is no.
 
 If the user explicitly says "just use defaults", skip the three and run with defaults — but offer them once, do not assume silently.
 
@@ -81,8 +82,9 @@ The script is conservative:
 - creates missing files and directories;
 - skips existing files (never overwrites);
 - never moves or deletes user files;
-- writes an initialization report to `_安装记录/`;
-- in `adapt`, only writes a health-check report by default;
+- writes an initialization report to `_安装记录/` in `new`, and in `adapt` only when writing an archival report or light upgrade files;
+- in default `adapt`, prints the evidence and scoring card first instead of writing a report;
+- in `adapt --write-health-report`, writes the health-check report for archival handoff;
 - in `adapt --apply-light-upgrade`, adds lightweight improvement files after user approval, skipping existing files.
 
 ## Localization (agent does this, on request)
@@ -144,7 +146,13 @@ Runtime entry roles:
 - `完整工作手册.md`: low-frequency system principles, read only for maintenance, review, or unclear routing.
 - `临时内容/`, `output/`, `归档/`, `_待删除/`: lifecycle directories. Agent output defaults to `临时内容/`; confirmed/delivered output goes to `output/`; the agent never deletes — discarded content moves to `_待删除/` for the cleanup script; `output/`, `归档/`, `执行记录/`, `巡查/` are never auto-cleaned (the rolling 巡查日志 is the distilled change-history kept after raw logs are pruned).
 
-`adapt` mode creates `Agent工作流助手/现有工作流体检报告.md` as a **half-finished scaffold**. The Python script cannot do a semantic health check — it only gathers evidence (a recursive structure scan + a list of entry docs) and lays out an empty capability-comparison table. **You (the agent) must then read the actual entry docs (`README`/`AGENTS.md`/`agent.md`/`CLAUDE.md` and whatever the scan surfaced) and fill the table by semantic comparison**, scoring each Agent-Workflow-OS capability **0–3** per the rubric the report carries (0 缺 / 1 雏形 / 2 成文可用 / 3 成熟或更强 / — 不适用), then computing the total and a maturity band — that is the "score" of the inspected system. Do NOT trust filename matching: a capability implemented under a different name, or implemented more strongly (e.g. an existing scheduled cleanup script), scores 2–3 — never score it 0 or suggest "upgrading" it. Only rows you score 0 become gaps, and only those drive suggestions. It does not modify existing workflows by default.
+`adapt` mode is **dialogue-first**. The Python script cannot do a semantic health check — it only gathers evidence (a recursive structure scan + a list of entry docs) and prints a scoring handoff with an empty capability-comparison table. **You (the agent) must then read the actual entry docs (`README`/`AGENTS.md`/`agent.md`/`CLAUDE.md` and whatever the scan surfaced) and output the score directly in the conversation**, scoring each Agent-Workflow-OS capability **0–3** per the rubric (0 缺 / 1 雏形 / 2 成文可用 / 3 成熟或更强 / — 不适用), then computing the total and a maturity band. Do NOT trust filename matching: a capability implemented under a different name, or implemented more strongly (e.g. an existing scheduled cleanup script), scores 2–3 — never score it 0 or suggest "upgrading" it. Only rows you score 0 become gaps, and only those drive suggestions. It does not modify existing workflows by default. If the user needs a retained artifact, rerun with `--write-health-report` to write `Agent工作流助手/现有工作流体检报告.md` as the archival scaffold.
+
+When the user wants a retained report after the dialogue score, rerun adapt with:
+
+```bash
+python3 scripts/init_agent_workflow.py --target <folder> --mode adapt --write-health-report
+```
 
 When the user approves the suggested changes, rerun adapt with:
 
